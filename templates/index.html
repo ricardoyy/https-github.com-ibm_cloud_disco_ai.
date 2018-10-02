@@ -1,0 +1,126 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>IBM Cloud Visual Recog LAB</title>
+
+    <!-- Bootstrap -->
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet">
+    <link href="static/styles.css" rel="stylesheet">
+</head>
+
+<body>
+    <div class="container">
+        <h1>IBM Cloud Discovery: AI LAB</h1>
+        <p>Image Object Recognition: Airplanes, Birds and Humans!</p>
+        <div class="input-group-lg center-block tf-image-pane">
+          <ul class="nav nav-tabs">
+            <li><a data-toggle="tab" href="#upload">Upload an Image</a></li>
+          </ul>
+
+          <div class="tab-content">
+            <div id="upload" class="tab-pane fade">
+              <div class="input-group">
+                <span class="input-group-btn">
+                  <span class="btn btn-default btn-upload">
+                    <input type="file" accept="image/*" id="upload_input"
+                           onchange="onUpload(this.files[0])">
+                  </span>
+                </span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Image preview. -->
+        <div id="preview">
+          <img id="image-preview" src="" width="25%"></img>
+          <span class="input-group-btn classify-button">
+              <button class="btn btn-info" onclick="classifyImage()">Classify</button>
+          </span>
+        </div>
+
+        <h4 id="loading" >Uploading and Classifying...</h4>
+        <div id="error" class="text-danger"></div>
+        <div id="results" class="lead text-center"></div>
+    </div>
+    <!-- jQuery (necessary for Bootstrap's JavaScript plugins) -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.12.4/jquery.min.js"></script>
+    <!-- Include all compiled plugins (below), or include individual files as needed -->
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script src="static/antixss.js" type="text/javascript"></script>
+
+    <script>
+        var fileType = null;
+        var data = null;
+
+        // Upload image and get classification results.
+        function classifyImage() {
+          var contentType, reqData;
+          var formData = new FormData();
+
+          if (fileType === 'url') {
+            contentType = 'application/json';
+            reqData =  JSON.stringify({'url': data });
+          } else {
+            formData.append('file', data);
+            contentType = false;
+            reqData = formData;
+          }
+
+          $('#loading').show();
+          $('#error').html('');
+          $('#results').text('');
+          $.ajax({
+            method: "POST",
+            url: "./api/classify",
+            data: reqData,
+            contentType: contentType,
+            processData: false,
+            cache: false
+          })
+          .done(function(data) {
+            $('#loading').hide();
+            confidences = data['values'][0]
+            classes = ['Airplanes', 'Birds' 'Humans']
+            for (var i = 0; i < confidences.length; i++) {
+              var label = classes[i];
+              var confidence = confidences[i].toFixed(2) ;
+              $('#results').append('<strong>' + label +
+                                   ':</strong> ' + Math.round(confidence*100) + '%'+'</br >');
+            }
+          })
+          .fail(function(data) {
+            $('#error').html(data.responseText);
+          })
+          .always(function() {
+            $('#loading').hide();
+          });;
+        }
+
+        function onUrlSubmit(url) {
+          console.log('URL SUBMitted');
+          $('#image-preview').prop('src', url);
+          $('#preview').toggle(true);
+          $('#results').text('');
+          fileType = 'url';
+          data = url;
+        }
+
+        function onUpload(file) {
+          $('#image-preview').prop('src', window.URL.createObjectURL(file));
+          $('#preview').toggle(true);
+          $('#results').text('');
+          fileType = 'upload';
+          data = file;
+        }
+
+        $("#upload_input").val('');
+        $('#preview').toggle($('#image_preview').src);
+        $('#loading').hide();
+    </script>
+</body>
+</html>
