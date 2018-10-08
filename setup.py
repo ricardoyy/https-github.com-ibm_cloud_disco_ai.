@@ -15,9 +15,9 @@ with open(path.join(here, 'README.md'), encoding='utf-8') as f:
     long_description = f.read()
 
 setup(
-    name='ibm-visual-recognition',
+    name='ibm-cloud-discovery-lab',
     version='1.0.0',
-    description='Web App for serving a pretrained TensorFlow model in production using IBM Watson machine learning.',
+    description='Web App for serving a pretrained TensorFlow model.',
     long_description=long_description,
     license='Apache-2.0'
 )

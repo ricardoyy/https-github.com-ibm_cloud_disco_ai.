@@ -1,5 +1,5 @@
 ---
 applications:
 - name: YOUR-APP-NAME
-  host: yourapphostaddress
-  memory: 1024M
+host: yourapphostname
+memory: 1024M

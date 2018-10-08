@@ -40,7 +40,7 @@ client = WatsonMachineLearningAPIClient(wml_credentials)
 client._refresh_token()
 
 #The REST API URL provided by your WML instance
-scoring_url = "insert your scoring url here"
+scoring_url = "Insert your WML scoring URL"
 
 # On Bluemix, get the port number from the environment variable PORT
 # When running this app on the local machine, default the port to 8000
